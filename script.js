@@ -8,9 +8,10 @@ class Rectangle {
     this.path2DInstance = null;
     this.context = context; // 画布上下文
     this.isTarget = false; // 事件对象
+    this.uuid = Date.now() + `${parseInt(Math.random() * 10000000)}`;
   }
 
-  draw() {
+  draw(color = '') {
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/isPointInPath
     // https://www.rgraph.net/blog/path-objects.html
     // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
@@ -18,14 +19,13 @@ class Rectangle {
     this.path2DInstance.rect(this.xpoint, this.ypoint, this.width, this.height);
     this.context.strokeStyle = 'red'; // 路径颜色
     this.context.lineWidth = 3; // 路径宽度
-    this.context.fillStyle = this.color; // 填充的颜色
+    this.context.fillStyle = color || this.color; // 填充的颜色
     this.context.stroke(this.path2DInstance); // 绘制路径
     this.context.fill(this.path2DInstance); // 填色
   }
 
-  changeColor(newColor) {
-    this.color = newColor;
-    this.draw();
+  activity() {
+    this.draw('grey');
   }
 
   clickRectangle(xmouse, ymouse) {
@@ -74,7 +74,17 @@ class Canvas {
 
       const targets = this.eles.filter((ele) => ele.isTarget);
       if (targets.length) {
-        targets.pop().changeColor('blue');
+        let targetIndex = 0; // 目标事件对象索引
+        let target = targets.pop(); // 取出事件对象
+        target.activity(); // 激活目标事件对象
+        this.eles.some((ele, index) => {
+          if (ele.uuid === target.uuid) {
+            targetIndex = index;
+            return true;
+          }
+        });
+        this.eles.splice(targetIndex, 1); // 将事件对象从元素列表中移除（被点击的元素优先级需要提高！！！）
+        this.eles.push(target); // 将事件对象添加到元素列表最后，保证元素被赋予最高优先级
       }
     });
   }
