@@ -24,14 +24,22 @@ class Rectangle {
     this.context.fill(this.path2DInstance); // 填色
   }
 
+  /**
+   * 激活元素（用户选中元素）
+   */
   activity() {
-    this.draw('grey');
+    this.draw('yellow');
+  }
+
+  /**
+   * 元素失活与被元素激活相对
+   */
+  inactivity() {
+    this.draw(this.color);
   }
 
   clickRectangle(xmouse, ymouse) {
-    /**
-     * coding... reset color
-     */
+    this.inactivity(); // 变更为失活状态
 
     if (this.context.isPointInPath(this.path2DInstance, xmouse, ymouse)) {
       this.isTarget = true;
@@ -84,6 +92,7 @@ class Canvas {
           }
         });
         this.eles.splice(targetIndex, 1); // 将事件对象从元素列表中移除（被点击的元素优先级需要提高！！！）
+        // this.target = target; // 用户当前选中的元素
         this.eles.push(target); // 将事件对象添加到元素列表最后，保证元素被赋予最高优先级
       }
     });
@@ -108,4 +117,12 @@ canvas.addRect({
   width: 40,
   height: 60,
   color: 'purple',
+});
+
+canvas.addRect({
+  x: 90,
+  y: 90,
+  width: 40,
+  height: 60,
+  color: 'ivory',
 });
