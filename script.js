@@ -6,7 +6,8 @@ class Rectangle {
     this.height = height;
     this.color = color;
     this.path2DInstance = null;
-    this.context = context;
+    this.context = context; // 画布上下文
+    this.isTarget = false; // 事件对象
   }
 
   draw() {
@@ -28,8 +29,14 @@ class Rectangle {
   }
 
   clickRectangle(xmouse, ymouse) {
+    /**
+     * coding... reset color
+     */
+
     if (this.context.isPointInPath(this.path2DInstance, xmouse, ymouse)) {
+      this.isTarget = true;
     } else {
+      this.isTarget = false;
     }
   }
 }
@@ -45,6 +52,7 @@ class Canvas {
     this.canvas.height = this.height;
     this.addClickEventListener();
     this.eles = [];
+    this.target = null; // 事件对象
   }
 
   addRect({ x, y, width, height, color }) {
@@ -53,12 +61,21 @@ class Canvas {
     rect.draw();
   }
 
-  addClickEventListener() {
-    console.log(this.canvas);
+  addClickEventListener(isStopBubble = false) {
     this.canvas.addEventListener('click', (event) => {
-      this.eles.forEach((ele) => {
-        ele.clickRectangle(event.layerX, event.layerY);
-      });
+      this.eles.forEach((ele) => (ele.isTarget = false)); // 重置 isTarget
+
+      if (isStopBubble) {
+      } else {
+        this.eles.forEach((ele) => {
+          ele.clickRectangle(event.layerX, event.layerY);
+        });
+      }
+
+      const targets = this.eles.filter((ele) => ele.isTarget);
+      if (targets.length) {
+        targets.pop().changeColor('blue');
+      }
     });
   }
 }
